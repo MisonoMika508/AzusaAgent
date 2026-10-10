@@ -1,0 +1,9 @@
+requests
+gradio_client
+sounddevice
+numpy
+faster-whisper
+pyperclip
+playwright
+opencv-python-headless
+Flask

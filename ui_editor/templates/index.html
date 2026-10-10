@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Azusa UI Template Studio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='editor.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Azusa UI Template Studio">
+      <span class="brand-mark">A</span>
+      <span><strong>Azusa</strong><small>UI TEMPLATE STUDIO</small></span>
+    </a>
+    <div class="top-actions">
+      <button class="button button-quiet" id="openImageButton" type="button">打开截图</button>
+      <button class="button button-primary" id="saveTemplateButton" type="button" disabled>保存模板</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="sidebar panel">
+      <div class="panel-heading">
+        <div><span class="eyebrow">LIBRARY</span><h1>模板库</h1></div>
+        <span class="count" id="templateCount">0</span>
+      </div>
+      <div class="template-list" id="templateList"></div>
+      <div class="library-footer">本地 SQLite · 仅保存手工标注模板</div>
+    </aside>
+
+    <section class="editor-column">
+      <div class="template-meta panel">
+        <label class="field compact-field">
+          <span>模板名称</span>
+          <input id="templateName" type="text" placeholder="例如：主界面" maxlength="100">
+        </label>
+        <label class="field compact-field game-field">
+          <span>游戏</span>
+          <input id="gameName" type="text" value="Blue Archive" maxlength="80">
+        </label>
+        <div class="image-meta" id="imageMeta">未载入截图</div>
+      </div>
+
+      <section class="canvas-panel panel" id="dropZone">
+        <div class="canvas-toolbar">
+          <div><span class="eyebrow">ANNOTATION CANVAS</span><strong>截图标注</strong></div>
+          <div class="canvas-tools">
+            <button class="icon-button" id="clearSelectionButton" type="button" title="取消选择" aria-label="取消选择">×</button>
+            <button class="button button-quiet button-small" id="deleteElementButton" type="button" disabled>删除选中框</button>
+          </div>
+        </div>
+        <div class="canvas-stage" id="canvasStage">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-symbol">＋</div>
+            <strong>拖入一张游戏截图</strong>
+            <span>PNG · JPG · WEBP · 最大 25 MB</span>
+            <button class="button button-primary" id="emptyOpenButton" type="button">选择图片</button>
+          </div>
+          <canvas id="annotator" hidden></canvas>
+        </div>
+        <div class="canvas-footer"><span id="canvasHint">就绪</span><span id="uiCount">0 个 UI</span></div>
+      </section>
+    </section>
+
+    <aside class="inspector panel">
+      <div class="panel-heading inspector-heading">
+        <div><span class="eyebrow">SELECTED ELEMENT</span><h2>UI 属性</h2></div>
+      </div>
+      <div class="inspector-empty" id="inspectorEmpty">在截图上拖出一个红框，或选择已有标注。</div>
+      <form id="elementForm" hidden>
+        <label class="field"><span>名称</span><input id="elementName" type="text" maxlength="100" placeholder="例如：咖啡厅"></label>
+        <label class="field"><span>功能</span><input id="elementFunction" type="text" maxlength="160" placeholder="例如：进入咖啡厅"></label>
+        <label class="field"><span>说明</span><textarea id="elementDescription" rows="2" maxlength="300" placeholder="可选"></textarea></label>
+        <div class="coordinate-grid">
+          <label class="field"><span>X</span><input id="elementX" type="number" min="0"></label>
+          <label class="field"><span>Y</span><input id="elementY" type="number" min="0"></label>
+          <label class="field"><span>宽</span><input id="elementWidth" type="number" min="1"></label>
+          <label class="field"><span>高</span><input id="elementHeight" type="number" min="1"></label>
+        </div>
+        <div class="center-readout">中心点 <strong id="elementCenter">—</strong><small>按原图像素计算</small></div>
+        <button class="button button-primary full-width" id="saveElementButton" type="submit">保存标注</button>
+      </form>
+      <div class="inspector-divider"></div>
+      <div class="elements-heading"><strong>当前 UI</strong><span id="elementListCount">0</span></div>
+      <div class="element-list" id="elementList"></div>
+    </aside>
+  </main>
+
+  <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='editor.js') }}" defer></script>
+</body>
+</html>

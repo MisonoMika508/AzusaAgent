@@ -1,0 +1,106 @@
+# API Key
+api.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Chroma database
+chroma_db/
+
+# Isolated Playwright browser profile (may contain login cookies)
+browser_profile/
+
+# Local game UI database and temporary editor uploads
+ui_database_data/
+ui_editor/uploads/
+
+# Local game UI database and temporary editor uploads
+ui_database_data/
+ui_editor/uploads/
+
+# Temporary files
+*.tmp
+*.temp
+
+
+# API 密钥与个人配置
+api.txt
+api_key.txt
+.env
+.env.*
+!.env.example
+secrets.json
+config.local.json
+
+# Python 虚拟环境
+.venv/
+venv/
+env/
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.pyd
+
+# 本地数据库与个人记忆
+chroma_db/
+*.sqlite
+*.sqlite3
+*.db
+个人记忆.txt
+白洲梓_记忆.txt
+
+# 本地模型和大型模型权重
+embedding_model/
+models/
+*.safetensors
+*.ckpt
+*.pth
+*.pt
+*.gguf
+
+# 日志、临时文件和截图
+logs/
+*.log
+screenshots/
+temp/
+tmp/
+
+# IDE 与系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+
+
+# API 密钥
+api.txt
+api_key.txt
+.env
+.env.*
+!.env.example
+secrets.json
+
+# 浏览器个人数据
+browser_profile/
+browser_profile
+.idea/
+
+# 本地生成的文件清单
+project_dirs.txt
+project_files.txt
+
+# Python 环境和缓存
+.venv/
+venv/
+__pycache__/
+
+# 本地数据库、记忆和日志
+chroma_db/
+logs/
+*.log
