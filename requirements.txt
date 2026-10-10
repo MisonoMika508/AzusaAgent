@@ -7,3 +7,5 @@ pyperclip
 playwright
 opencv-python-headless
 Flask
+huggingface-hub
+sentence-transformers
