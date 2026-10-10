@@ -1,433 +1,668 @@
-# Azusa Agent
+# AzusaAgent
 
-**中文** · **English** · **日本語**
+**一个以白洲梓为主题的 Python AI Agent 项目，支持 AI 对话、工具调用、屏幕识别、计算机操作、语音输入与语音合成。**
 
-An AI desktop assistant project built with Python, featuring AI conversations, tool calling, voice interaction, and UI-related tools.
+**An AI agent project themed around Azusa Shirasu, featuring AI conversations, tool calling, screen recognition, computer interaction, speech input, and text-to-speech.**
 
-一个基于 Python 的 AI 桌面助手项目，包含 AI 对话、工具调用、语音交互和 UI 相关工具。
-
-Python をベースにした AI デスクトップアシスタントプロジェクトです。AI との対話、ツール呼び出し、音声インタラクション、UI 関連ツールを備えています。
+**白洲アズサをテーマにした Python 製 AI エージェントプロジェクトです。AI 会話、ツール呼び出し、画面認識、PC 操作、音声入力、音声合成に対応しています。**
 
 ---
 
-# 中文
+## 目录 | Contents | 目次
 
-## 项目简介
+- [项目简介](#项目简介)
+- [功能特点](#功能特点)
+- [环境要求](#环境要求)
+- [安装与运行](#安装与运行)
+- [API 密钥配置](#api-密钥配置)
+- [下载嵌入模型](#下载嵌入模型)
+- [本地模型与云端 API](#本地模型与云端-api)
+- [语音功能](#语音功能)
+- [项目结构](#项目结构)
+- [安全与隐私](#安全与隐私)
+- [常见问题](#常见问题)
+- [English](#english)
+- [日本語](#日本語)
+- [许可证](#许可证)
 
-Azusa Agent 是一个持续开发中的 Python 桌面 AI 助手项目，旨在探索将 AI 模型与桌面工具、语音交互和 UI 相关功能相结合。
+---
 
-项目当前包含或涉及以下模块：
+# 项目简介
 
-- **AI 对话与工具调用**：通过 AI 模型处理用户请求，并调用相应工具。
-- **桌面工具**：包含文件操作及其他工具模块。
-- **语音交互**：包含语音输入、音频播放和语音合成相关模块。
-- **UI 工具**：包含 UI 数据库及 UI 编辑器相关代码。
-- **语义检索**：使用 Sentence Transformers 模型将文本转换为向量，供语义搜索或记忆检索使用。
+AzusaAgent 是一个使用 Python 开发的 AI Agent 项目，以《蔚蓝档案》中的白洲梓为角色主题。
 
-具体功能取决于当前代码、运行模式、外部服务及本地资源的配置。部分功能可能尚未完善。
+项目通过大语言模型、工具调用、知识检索和计算机操作功能，让 AI 不仅可以进行文本对话，还可以在获得相应权限和配置后执行指定操作。
 
-## 项目结构
+本项目仍在开发中。部分功能依赖外部 API、本地模型、语音服务或额外的资源文件，因此克隆仓库后不一定能够立即使用全部功能。
 
-```text
-AzusaAgent/
-├── roles/                  # 角色配置
-├── tools/                  # 工具模块
-├── ui_database/            # UI 数据库相关文件
-├── ui_editor/              # UI 编辑器相关文件
-├── bridge.py               # 程序入口与控制逻辑
-├── config.py               # 配置模块
-├── ollama_client.py        # AI 客户端与交互逻辑
-├── audio_player.py         # 音频播放
-├── stt.py                  # 语音识别相关模块
-├── tts.py                  # 语音合成相关模块
-├── download.py             # 下载脚本（当前可能尚未实现）
-├── requirements.txt        # Python 依赖
-├── run.bat                 # Windows 启动脚本
-└── README.md               # 项目说明
-```
+## 功能特点
 
-以下目录或文件可能需要在运行环境中另外准备，不一定包含在 GitHub 仓库中：
+- **AI 对话：** 使用配置的大语言模型进行对话。
+- **工具调用：** 由 AI 选择并调用 Python 工具完成指定任务。
+- **知识检索：** 支持通过嵌入模型进行语义检索。
+- **屏幕交互：** 提供屏幕截图、区域检查及鼠标键盘操作相关工具。
+- **UI 辅助：** 包含 UI 数据库与 UI 编辑器相关代码。
+- **语音输入：** 提供语音识别相关功能，具体使用方式取决于本地配置。
+- **语音合成：** 支持配置外部 TTS 服务。
+- **角色设定：** 支持通过角色配置文件定义 AI 的人设。
+- **模型选择：** 项目代码包含本地模型和云端 API 相关的客户端逻辑，实际启用方式取决于当前代码配置。
 
-- `embedding_model/`：文本嵌入模型。
-- `chroma_db/`：向量数据库或检索数据。
-- `knowledge_base/`：知识库和记忆数据。
-- `browser_profile/`：浏览器配置和会话数据。
-- `generated_images/`：生成的图片。
-- `screen_cache/`：屏幕截图或缓存数据。
-- `ui_database_data/`：UI 数据或运行时数据。
-- `api.txt`：本地 API 配置文件（如果当前代码需要）。
+请注意：仓库中存在相关代码，并不代表所有功能都已完成、经过完整测试或能在所有电脑上直接运行。
 
-这些目录的实际用途和必需程度取决于当前代码配置。
+---
 
-## 环境要求
+# 环境要求
 
-- Windows 电脑。
-- 与项目依赖兼容的 Python 版本。
-- 能够访问所选 AI 服务的网络环境。
-- 按需安装的语音服务、模型和其他外部组件。
+推荐使用 Windows 10 或 Windows 11。
 
-如果使用本地 AI 模型，还需要安装相应的本地推理软件及模型。若使用云端 API，则需要有效的 API 配置。
+| 项目 | 要求 |
+|---|---|
+| 操作系统 | Windows 10 / Windows 11 |
+| Python | 建议使用 Python 3.11，具体兼容性取决于依赖 |
+| 网络 | 下载 Python 依赖、嵌入模型以及调用云端 API 时需要 |
+| Git | 可使用 GitHub Desktop 管理仓库 |
+| API | 使用云端模型时需要对应服务商的 API Key |
+| 本地模型 | 使用 Ollama 模式时需要安装并运行 Ollama |
+| 语音服务 | 取决于所启用的 STT / TTS 实现 |
 
-## 安装与运行
+部分依赖可能需要额外的系统组件。不同 Python 版本、显卡驱动及依赖版本可能会影响兼容性。
 
-### 1. 下载项目
+---
 
-在 GitHub 仓库页面下载 ZIP，或使用 Git 克隆：
+# 安装与运行
+
+## 1. 下载项目
+
+可以通过 GitHub Desktop 克隆仓库，也可以在 GitHub 页面点击 **Code → Download ZIP** 下载源代码。
+
+仓库地址：
+
+https://github.com/MisonoMika508/AzusaAgent
+
+如果使用 GitHub Desktop：
+
+1. 打开 GitHub Desktop。
+2. 选择 **File → Clone repository**。
+3. 选择 `MisonoMika508/AzusaAgent`。
+4. 选择希望保存项目的位置。
+5. 点击 **Clone**。
+
+## 2. 安装 Python
+
+如果电脑尚未安装 Python，请先安装合适版本的 Python，并确认可以通过终端运行：
 
 ```powershell
-git clone https://github.com/MisonoMika508/AzusaAgent.git
-cd AzusaAgent
+python --version
 ```
 
-### 2. 创建 Python 虚拟环境
+如果 `python` 命令不可用，请检查 Python 安装路径及 PATH 配置。
+
+## 3. 创建虚拟环境
+
+打开 PowerShell，切换到项目目录：
+
+```powershell
+cd "你的项目目录\AzusaAgent"
+```
+
+创建虚拟环境：
 
 ```powershell
 python -m venv .venv
+```
+
+激活虚拟环境：
+
+```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-如果 PowerShell 无法激活虚拟环境，也可以直接使用虚拟环境中的 Python 执行后续命令：
+如果 PowerShell 阻止脚本运行，可以改用命令提示符（CMD），执行：
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```bat
+.venv\Scripts\activate.bat
 ```
 
-### 3. 安装依赖
+## 4. 安装依赖
+
+确保已进入项目目录，并且虚拟环境已激活：
 
 ```powershell
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-如果语义检索功能需要 Sentence Transformers，而依赖列表中尚未包含它，请安装：
+如果某个依赖安装失败，请先查看错误信息，并确认 Python 版本是否受该依赖支持。
+
+## 5. 配置 API 密钥
+
+请根据下一节的说明创建本地 `api.txt`，不要把真实密钥提交到 GitHub。
+
+## 6. 下载嵌入模型
+
+依赖安装完成后，执行：
 
 ```powershell
-python -m pip install sentence-transformers
+python download.py
 ```
 
-### 4. 下载嵌入模型
+程序会下载并验证项目使用的嵌入模型。详细说明见下文。
 
-本项目使用的模型：
+## 7. 启动项目
 
-**`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`**
+当前仓库提供 `bridge.py` 作为主要程序入口。
 
-- 官方页面：https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-- 用途：文本嵌入、语义搜索和记忆检索。
-- 输出向量维度：384。
-- 许可证：Apache-2.0。
-
-模型文件不会上传到本仓库，需要单独下载。
-
-在项目根目录打开 PowerShell，并确保已经激活虚拟环境，然后执行：
-
-```powershell
-python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2').save('embedding_model')"
-```
-
-下载完成后，确认 `embedding_model/` 目录已经生成。
-
-首次下载需要网络连接，可能需要等待一段时间。下载后应确认模型加载路径与 `config.py`、`bridge.py` 或实际模型加载代码中的路径一致。
-
-### 5. 配置 API 密钥
-
-如果当前运行模式需要 API 密钥，请在项目根目录创建本地 `api.txt`，按照当前代码要求填写密钥。
-
-**请勿将真实 API 密钥上传到 GitHub。**
-
-如果项目要求其他配置格式或 API 服务地址，请以实际代码为准。
-
-### 6. 启动程序
-
-确认依赖、模型及必要配置已经准备好后，在项目根目录运行：
+在项目目录及正确的 Python 环境中，可以尝试：
 
 ```powershell
 python bridge.py
 ```
 
-如果 `run.bat` 已经按照当前环境配置完成，也可以尝试运行该文件。
+具体启动方式取决于当前版本的代码和本地配置。
 
-首次运行前，请检查程序是否还依赖仓库外的目录或文件。仅下载 GitHub 仓库并不保证所有功能都能立即运行。
+如果 `run.bat` 仍使用开发者电脑上的绝对路径，需要先修改它，才能在其他电脑上使用。请勿假设该启动脚本已经适用于任意安装目录。
 
-## 外部模型与服务
+---
 
-| 组件 | 用途 | 是否需要 |
-|---|---|---|
-| Sentence Transformers 模型 | 文本嵌入和语义检索 | 使用相关检索功能时 |
-| AI API | 云端 AI 对话 | 使用云端模式时 |
-| Ollama 与本地模型 | 本地 AI 推理 | 使用本地模式时 |
-| 语音服务和模型 | 语音输入、语音合成 | 使用对应语音功能时 |
-| UI 数据和缓存 | UI 相关功能 | 根据具体功能而定 |
+# API 密钥配置
 
-请从各组件的官方页面获取模型和软件，并遵守各自的许可证和使用条款。
+部分云端模型需要 API Key。
 
-## 安全与隐私
+项目使用的密钥文件为：
 
-- 不要上传 `api.txt`、`.env` 或任何真实 API 密钥。
-- 不要上传包含账号、Cookie 或登录状态的 `browser_profile/`。
-- 不要上传私人记忆、个人资料或敏感知识库文件。
-- 不要将截图缓存、日志或私人生成内容默认公开。
-- 不要上传 `.venv/`、`__pycache__/` 和大型模型文件。
-- 在公开提交代码之前，请检查文件内容及 Git 提交历史。
+```text
+api.txt
+```
 
-如果 API 密钥曾经被公开，应立即在相应服务平台撤销并重新生成。
+请在本地项目根目录中创建此文件，并按照当前 `ollama_client.py` 所要求的格式填写密钥。
 
-## 项目状态
+**请先检查当前代码读取 `api.txt` 的方式，再填写内容。不要把真实 API Key 发给其他人，也不要提交到 GitHub。**
 
-本项目仍在开发中。功能、依赖和安装方式可能发生变化。欢迎提交问题报告、建议和改进。
+不同服务商的 API Key 不能通用。请使用对应服务商控制台创建的密钥，并确认 API 地址、模型名称与代码配置一致。
 
-## 许可证
+## 为什么不直接上传 `api.txt`？
 
-本仓库的许可证以根目录的 `LICENSE` 文件为准。如果尚未提供 `LICENSE`，请不要假设项目代码已经允许他人自由复制、修改或再发布。
+API Key 可能关联你的账户、配额或付费服务。如果泄露，其他人可能未经授权使用你的 API 额度。
+
+因此：
+
+- 不要上传 `api.txt`。
+- 不要把 API Key 写入 README、源代码、截图或提交说明。
+- 不要把 `.env` 等包含密钥的文件提交到公开仓库。
+- 不要在公开 Issue 或讨论中粘贴密钥。
+- 如果密钥曾经公开，立即在服务商控制台撤销或轮换该密钥。
+
+仓库的 `.gitignore` 应排除 `api.txt`。但 `.gitignore` 只会阻止尚未被 Git 跟踪的文件；如果密钥文件以前已经提交，仅添加忽略规则并不足以从历史记录中删除它。
+
+---
+
+# 下载嵌入模型
+
+本项目提供 `download.py`，用于下载、保存和验证语义检索所需的嵌入模型。
+
+## 默认模型
+
+模型名称：
+
+`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
+
+模型页面：
+
+https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+
+该模型支持多语言句子嵌入，可用于语义相似度计算和检索任务。模型输出的嵌入向量维度为 384。
+
+## 下载方法
+
+先安装项目依赖：
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+然后运行：
+
+```powershell
+python download.py
+```
+
+默认情况下，模型会下载到项目目录下的：
+
+```text
+embedding_model/
+```
+
+该目录属于下载生成的模型资源，不需要随源代码一起上传到 GitHub。
+
+## 可选参数
+
+强制重新下载：
+
+```powershell
+python download.py --force
+```
+
+指定保存目录：
+
+```powershell
+python download.py --output-dir embedding_model
+```
+
+指定模型版本：
+
+```powershell
+python download.py --revision main
+```
+
+使用其他 Hugging Face 兼容镜像端点：
+
+```powershell
+python download.py --endpoint https://hf-mirror.com
+```
+
+跳过模型加载和嵌入测试：
+
+```powershell
+python download.py --no-verify
+```
+
+默认流程会在下载后验证所需文件，并尝试加载模型及生成测试嵌入。建议正常情况下保留验证步骤，以便尽早发现下载不完整或依赖异常等问题。
+
+如果下载失败，请检查网络连接、模型仓库可访问性、磁盘空间和相关依赖版本。
+
+---
+
+# 本地模型与云端 API
+
+项目代码包含本地模型和云端 API 相关逻辑，但实际运行模式由当前代码配置决定。
+
+## 云端 API 模式
+
+云端模式通常需要：
+
+- 可访问对应 API 服务的网络连接。
+- 有效的 API Key。
+- 正确的 API 地址和模型名称。
+- 服务商账户具有可用额度或权限。
+
+云端 API 的实际费用、速率限制和数据处理方式由对应服务商的政策决定。
+
+## Ollama 本地模型模式
+
+本地模式需要另外安装 Ollama，并下载代码配置中指定的模型。
+
+基本流程：
+
+1. 安装并启动 Ollama。
+2. 下载代码配置所需的模型。
+3. 确认本地 Ollama 服务可以正常访问。
+4. 根据项目代码切换到本地模式。
+5. 启动 `bridge.py` 并测试对话。
+
+Ollama 官方网站：
+
+https://ollama.com/
+
+请以仓库当前版本的 `config.py`、`ollama_client.py` 和 `bridge.py` 为准，不要假设克隆后的默认配置一定与开发者电脑上的运行配置相同。
+
+---
+
+# 语音功能
+
+项目包含语音识别及语音合成相关代码，例如：
+
+- `stt.py`：语音输入与识别相关功能。
+- `tts.py`：语音合成相关功能。
+- `audio_player.py`：音频播放相关功能。
+
+实际可用的功能取决于依赖是否安装、服务是否启动，以及所需模型和权重文件是否存在。
+
+如果使用外部语音合成服务，请根据对应服务的说明配置地址、模型和必要资源。请勿上传个人语音、私有录音或未获授权的模型文件。
+
+---
+
+# 项目结构
+
+```text
+AzusaAgent/
+├── bridge.py
+├── config.py
+├── ollama_client.py
+├── audio_player.py
+├── stt.py
+├── tts.py
+├── download.py
+├── requirements.txt
+├── run.bat
+├── test_ui_matcher.py
+├── roles/
+├── tools/
+├── ui_database/
+├── ui_editor/
+├── .gitignore
+└── README.md
+```
+
+说明：
+
+| 文件或目录 | 用途 |
+|---|---|
+| `bridge.py` | Agent 主程序入口 |
+| `config.py` | 项目配置 |
+| `ollama_client.py` | 模型客户端及相关调用逻辑 |
+| `audio_player.py` | 音频播放 |
+| `stt.py` | 语音识别相关代码 |
+| `tts.py` | 语音合成相关代码 |
+| `download.py` | 下载并验证嵌入模型 |
+| `requirements.txt` | Python 依赖列表 |
+| `run.bat` | Windows 启动脚本 |
+| `roles/` | 角色配置 |
+| `tools/` | Agent 工具 |
+| `ui_database/` | UI 数据相关资源或代码 |
+| `ui_editor/` | UI 编辑器相关代码 |
+
+根据实际使用情况，项目还可能需要本地知识库、向量数据库、浏览器配置、模型文件或其他资源。这些资源不一定包含在 GitHub 仓库中，需要按照代码要求单独准备。
+
+---
+
+# 安全与隐私
+
+本项目可以调用鼠标、键盘、屏幕截图、文件读取或其他计算机操作工具。使用前请了解对应工具的行为和权限范围。
+
+建议：
+
+- 先在测试环境中验证新功能。
+- 运行前检查工具允许执行的操作。
+- 不要对不可信的模型输出无条件执行高风险操作。
+- 不要将个人文件、浏览器资料、访问令牌或 API 密钥提交到公开仓库。
+- 下载外部代码、模型和依赖时，检查来源及许可证。
+- 对可能修改或删除文件的操作保留备份。
+
+本项目按当前代码提供功能，不保证适用于所有系统环境，也不保证没有错误。请自行评估运行代码的风险。
+
+---
+
+# 常见问题
+
+## 1. 启动时提示找不到模块
+
+确认虚拟环境已经激活，并执行：
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+同时检查运行命令使用的 Python 是否为刚才安装依赖的同一个环境。
+
+## 2. 嵌入模型下载失败
+
+确认网络可以访问 Hugging Face，检查 `huggingface-hub` 与 `sentence-transformers` 是否正确安装，然后重新运行：
+
+```powershell
+python download.py
+```
+
+如果需要重新下载，可以使用：
+
+```powershell
+python download.py --force
+```
+
+## 3. API 调用失败
+
+请检查：
+
+- `api.txt` 是否存在。
+- 文件内容格式是否符合当前代码要求。
+- API Key 是否有效。
+- API 地址与模型名称是否匹配。
+- 服务商账户是否具有可用额度。
+- 网络是否可以访问 API 服务。
+
+请勿在公开问题中提交真实密钥。
+
+## 4. 在另一台电脑上无法启动
+
+开发环境中的绝对路径、本地模型、知识库、虚拟环境及其他资源不会因为上传 Python 源代码而自动迁移。
+
+建议在独立目录中重新克隆仓库，创建新的虚拟环境，安装依赖，下载嵌入模型，并按照当前代码配置其他必要资源。
+
+## 5. 为什么 GitHub 上没有模型文件？
+
+大型模型文件、缓存、虚拟环境和个人数据通常不适合直接提交到源代码仓库。嵌入模型可以通过 `download.py` 下载到本地。
 
 ---
 
 # English
 
-## About
+## Overview
 
-Azusa Agent is a Python desktop AI assistant project under active development. It explores the integration of AI models with desktop tools, voice interaction, and UI-related functionality.
+AzusaAgent is a Python-based AI agent project themed around Azusa Shirasu from *Blue Archive*.
 
-Current project areas include:
+It combines language-model interactions with tool calling, semantic retrieval, screen-related utilities, computer interaction, and optional speech features.
 
-- **AI conversations and tool calling**
-- **Desktop tools**, including file-related operations
-- **Voice interaction**, including speech input, audio playback, and speech synthesis modules
-- **UI tools**, including a UI database and editor
-- **Semantic retrieval**, using Sentence Transformers to generate text embeddings
+The project is under development. Some features require external APIs, local models, additional assets, or service configuration.
 
-Available functionality depends on the source code, runtime configuration, external services, and local resources. Some features may still be incomplete.
+## Features
+
+- AI conversations with a configurable language model.
+- Python tool calling.
+- Semantic retrieval using an embedding model.
+- Screen capture and UI-related utilities.
+- Mouse and keyboard interaction tools.
+- Character configuration.
+- Optional speech recognition and text-to-speech components.
+- Local-model and cloud-API client logic.
+
+The availability of each feature depends on the current code and local configuration.
 
 ## Requirements
 
-- A Windows PC.
-- A Python version compatible with the project dependencies.
-- Network access to the selected AI service.
-- Additional models or services for optional features.
-
-Local-model mode requires the appropriate inference software and model. Cloud API mode requires a valid API configuration.
+- Windows 10 or Windows 11 is recommended.
+- A compatible Python installation.
+- Internet access for dependency and model downloads.
+- An API key for cloud-model usage.
+- Ollama and a compatible local model if local inference is enabled.
+- Additional speech services or model assets when required.
 
 ## Installation
 
-### 1. Download the repository
+Clone the repository:
 
-```powershell
-git clone https://github.com/MisonoMika508/AzusaAgent.git
-cd AzusaAgent
-```
+https://github.com/MisonoMika508/AzusaAgent
 
-### 2. Create a virtual environment
+Open a terminal in the project directory and run:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```powershell
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-If Sentence Transformers is needed but is not already listed in `requirements.txt`, install it separately:
+Create `api.txt` locally if required by your selected API configuration. Follow the format expected by the current source code, and never commit real API keys.
+
+Download the embedding model:
 
 ```powershell
-python -m pip install sentence-transformers
+python download.py
 ```
 
-### 4. Download the embedding model
-
-The project uses:
-
-**`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`**
-
-- Official model page: https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-- Purpose: text embeddings and semantic retrieval.
-- Embedding dimension: 384.
-- License: Apache-2.0.
-
-The model files are not included in this repository.
-
-From the project root, run:
-
-```powershell
-python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2').save('embedding_model')"
-```
-
-Verify that `embedding_model/` exists after downloading. Make sure its location matches the model path expected by the source code.
-
-The initial download requires an internet connection and may take some time.
-
-### 5. Configure the API key
-
-If the selected runtime mode requires an API key, create a local `api.txt` file in the project root and follow the format expected by the source code.
-
-**Never upload real API keys to GitHub.**
-
-### 6. Run the application
-
-After preparing the dependencies, model, and required configuration, run:
+Start the application:
 
 ```powershell
 python bridge.py
 ```
 
-You may also try `run.bat` if it is configured for your environment.
+The exact startup procedure depends on the current configuration and required local resources.
 
-Some runtime resources may be stored outside the repository. Cloning the repository alone does not guarantee that every feature will work immediately.
+## Embedding Model
 
-## External Models and Services
+The default embedding model is:
 
-| Component | Purpose | Required when |
-|---|---|---|
-| Sentence Transformers model | Text embeddings and semantic retrieval | Using retrieval features |
-| AI API | Cloud-based AI conversations | Using cloud mode |
-| Ollama and a local model | Local AI inference | Using local mode |
-| Voice services and models | Speech input and synthesis | Using the corresponding voice features |
-| UI data and caches | UI-related features | Depending on the feature |
+`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 
-Obtain external components from their official sources and follow their respective licenses and terms.
+Model page:
 
-## Security and Privacy
+https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 
-- Never upload `api.txt`, `.env`, or real API keys.
-- Do not upload `browser_profile/` if it contains cookies, account data, or login sessions.
-- Do not publish private memories, personal information, or sensitive knowledge-base files.
-- Review screenshots, logs, and generated content before publishing.
-- Exclude `.venv/`, `__pycache__/`, and large model files from version control.
-- Review file contents and commit history before making the repository public.
+The model produces 384-dimensional sentence embeddings and supports multilingual semantic retrieval.
 
-If an API key has been exposed, revoke it and generate a replacement immediately.
+The downloader saves the model under `embedding_model/` by default and performs validation unless verification is disabled.
 
-## Project Status
+Useful options:
 
-This project is under active development. Features, dependencies, and setup instructions may change. Bug reports, suggestions, and improvements are welcome.
+```powershell
+python download.py --force
+python download.py --output-dir embedding_model
+python download.py --revision main
+python download.py --endpoint https://hf-mirror.com
+python download.py --no-verify
+```
 
-## License
+## Local Models and Cloud APIs
 
-Refer to the `LICENSE` file in the repository root. If no license is provided, do not assume that others are permitted to freely copy, modify, or redistribute the code.
+Cloud mode requires a valid API key, the correct API endpoint and model name, network access, and any required service quota.
+
+Local mode requires Ollama and the model configured in the source code.
+
+Check `config.py`, `ollama_client.py`, and `bridge.py` to determine which mode is enabled in the version you are using.
+
+Ollama website: https://ollama.com/
+
+## Security
+
+- Never commit `api.txt`, API keys, access tokens, or private configuration files.
+- If a key has been exposed, revoke or rotate it immediately.
+- Review computer-control tools before running the application.
+- Keep backups of important files.
+- Review external model and dependency licenses.
+
+This project is under development and is provided without a guarantee that every feature will work in every environment.
 
 ---
 
 # 日本語
 
-## プロジェクトについて
+## プロジェクト概要
 
-Azusa Agent は、開発中の Python 製 AI デスクトップアシスタントプロジェクトです。AI モデルとデスクトップ操作ツール、音声インタラクション、UI 関連機能の連携を目指しています。
+AzusaAgent は、『ブルーアーカイブ』の白洲アズサをテーマにした Python 製 AI エージェントプロジェクトです。
 
-主な機能分野：
+大規模言語モデルとの会話、ツール呼び出し、意味検索、画面関連機能、PC 操作、音声関連機能などを組み合わせています。
 
-- **AI との対話とツール呼び出し**
-- **デスクトップツール**：ファイル関連の操作など
-- **音声インタラクション**：音声入力、音声再生、音声合成に関連するモジュール
-- **UI ツール**：UI データベースとエディター
-- **意味検索**：Sentence Transformers によるテキストのベクトル化
+開発中のプロジェクトであり、一部の機能には外部 API、ローカルモデル、追加ファイル、各種サービスの設定が必要です。
 
-利用できる機能は、ソースコード、実行設定、外部サービス、ローカルリソースによって異なります。一部の機能は未完成の場合があります。
+## 主な機能
+
+- 設定した言語モデルとの AI 会話
+- Python ツールの呼び出し
+- 埋め込みモデルを利用した意味検索
+- スクリーンショットおよび UI 関連機能
+- マウス・キーボード操作用ツール
+- キャラクター設定
+- 音声認識および音声合成関連機能
+- ローカルモデルとクラウド API に関するクライアント処理
+
+各機能の利用可否は、現在のソースコードとローカル環境の設定によって異なります。
 
 ## 動作環境
 
-- Windows PC
-- プロジェクトの依存関係に対応する Python
-- 使用する AI サービスに接続できるネットワーク
-- オプション機能に必要な追加モデルやサービス
-
-ローカルモデルモードでは、対応する推論ソフトウェアとモデルが必要です。クラウド API モードでは、有効な API 設定が必要です。
+- Windows 10 / Windows 11 推奨
+- 対応する Python 環境
+- 依存パッケージとモデルをダウンロードするためのインターネット接続
+- クラウドモデルを使用する場合は API キー
+- ローカル推論を使用する場合は Ollama と対応モデル
+- 必要に応じて音声サービスや追加モデル
 
 ## インストール
 
-### 1. リポジトリを取得
+GitHub リポジトリ：
 
-```powershell
-git clone https://github.com/MisonoMika508/AzusaAgent.git
-cd AzusaAgent
-```
+https://github.com/MisonoMika508/AzusaAgent
 
-### 2. 仮想環境を作成
+プロジェクトディレクトリで次のコマンドを実行します。
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-### 3. 依存関係をインストール
-
-```powershell
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-Sentence Transformers が必要で、まだ依存関係に含まれていない場合は、別途インストールしてください。
+必要に応じて `api.txt` をローカルに作成し、現在のソースコードが要求する形式で API キーを設定してください。実際の API キーを GitHub にアップロードしないでください。
+
+埋め込みモデルをダウンロードします。
 
 ```powershell
-python -m pip install sentence-transformers
+python download.py
 ```
 
-### 4. 埋め込みモデルをダウンロード
-
-本プロジェクトでは次のモデルを使用します。
-
-**`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`**
-
-- 公式ページ：https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-- 用途：テキストのベクトル化と意味検索
-- ベクトル次元数：384
-- ライセンス：Apache-2.0
-
-モデル本体はリポジトリに含まれていません。
-
-プロジェクトのルートディレクトリで次のコマンドを実行してください。
-
-```powershell
-python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2').save('embedding_model')"
-```
-
-ダウンロード後、`embedding_model/` が作成されていることを確認してください。保存先はソースコードが要求するモデルの読み込みパスと一致している必要があります。
-
-初回のダウンロードにはインターネット接続が必要で、時間がかかる場合があります。
-
-### 5. API キーを設定
-
-実行モードで API キーが必要な場合は、プロジェクトのルートディレクトリにローカルの `api.txt` を作成し、ソースコードが要求する形式で設定してください。
-
-**実際の API キーを GitHub にアップロードしないでください。**
-
-### 6. 起動
-
-依存関係、モデル、必要な設定を準備した後、次のコマンドで起動します。
+アプリケーションを起動します。
 
 ```powershell
 python bridge.py
 ```
 
-環境に合わせて設定されている場合は、`run.bat` も使用できます。
+実際の起動方法は、使用する設定や追加リソースによって異なります。
 
-実行に必要なリソースの一部がリポジトリ外に保存されている場合があります。リポジトリを取得しただけでは、すべての機能がすぐに動作するとは限りません。
+## 埋め込みモデル
 
-## 外部モデルとサービス
+デフォルトモデル：
 
-| コンポーネント | 用途 | 必要になる場合 |
-|---|---|---|
-| Sentence Transformers モデル | テキストのベクトル化と意味検索 | 検索機能を使用する場合 |
-| AI API | クラウド AI との対話 | クラウドモードを使用する場合 |
-| Ollama とローカルモデル | ローカル AI 推論 | ローカルモードを使用する場合 |
-| 音声サービスとモデル | 音声入力・音声合成 | 該当する音声機能を使用する場合 |
-| UI データとキャッシュ | UI 関連機能 | 機能に応じて必要 |
+`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 
-外部コンポーネントは公式配布元から入手し、それぞれのライセンスと利用規約に従ってください。
+モデルページ：
 
-## セキュリティとプライバシー
+https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 
-- `api.txt`、`.env`、実際の API キーをアップロードしないでください。
-- Cookie、アカウント情報、ログイン状態を含む `browser_profile/` を公開しないでください。
-- 個人の記憶データ、個人情報、機密性のある知識ベースを公開しないでください。
-- スクリーンショット、ログ、生成したコンテンツを公開前に確認してください。
-- `.venv/`、`__pycache__/`、大容量モデルを Git の管理対象から除外してください。
-- リポジトリを公開する前に、ファイル内容とコミット履歴を確認してください。
+このモデルは多言語の意味検索に利用でき、384 次元の埋め込みベクトルを生成します。
 
-API キーが公開された場合は、直ちに無効化し、新しいキーを発行してください。
+デフォルトでは `download.py` がモデルを `embedding_model/` に保存し、検証を行います。
 
-## 開発状況
+利用可能なオプション：
 
-本プロジェクトは開発中です。機能、依存関係、セットアップ手順は変更される場合があります。不具合報告、提案、改善への協力を歓迎します。
+```powershell
+python download.py --force
+python download.py --output-dir embedding_model
+python download.py --revision main
+python download.py --endpoint https://hf-mirror.com
+python download.py --no-verify
+```
 
-## ライセンス
+## ローカルモデルとクラウド API
 
-適用されるライセンスについては、リポジトリのルートにある `LICENSE` ファイルを確認してください。ライセンスがない場合、自由な複製、改変、再配布が許可されていると想定しないでください。
+クラウドモードでは、有効な API キー、正しい API エンドポイントとモデル名、ネットワーク接続が必要です。
+
+ローカルモードでは Ollama と、ソースコードで指定されたモデルが必要です。
+
+現在の設定は `config.py`、`ollama_client.py`、`bridge.py` を確認してください。
+
+Ollama 公式サイト：
+
+https://ollama.com/
+
+## セキュリティ
+
+- `api.txt`、API キー、アクセストークン、個人設定ファイルを GitHub にアップロードしないでください。
+- API キーが漏えいした場合は、直ちに無効化または再発行してください。
+- PC 操作用ツールの動作を確認してから実行してください。
+- 重要なファイルはバックアップしてください。
+- 外部モデルと依存パッケージのライセンスを確認してください。
+
+本プロジェクトは開発中であり、すべての機能があらゆる環境で動作することを保証するものではありません。
+
+---
+
+# 许可证 | License | ライセンス
+
+请在发布前确认本项目代码、角色相关素材、外部模型、语音模型及依赖库各自的授权条件。
+
+Unless a license file is included in this repository, no general open-source license should be assumed to apply to the project. Please add an appropriate `LICENSE` file after deciding how the project may be used, modified, and redistributed.
+
+このリポジトリにライセンスファイルがない場合、プロジェクト全体に特定のオープンソースライセンスが適用されるとは限りません。公開・改変・再配布の条件を決めたうえで、適切な `LICENSE` ファイルを追加してください。
+
+---
+
+**作者 | Author | 作者：** [MisonoMika508](https://github.com/MisonoMika508)
+
+**Repository:** https://github.com/MisonoMika508/AzusaAgent
